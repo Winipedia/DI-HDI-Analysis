@@ -1,0 +1,112 @@
+---
+title: "Exploring the Impact of Freedom and Democracy on Quality of Life"
+author: "Win Steveker"
+date: "today"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+---
+
+In the following DI will refer to the "democracy index" 
+and HDI will refer to the "human development index".
+
+
+Imports
+```{python}
+import sys
+sys.dont_write_bytecode = True
+
+from analysis.clean_data import (
+    get_joined_di_hdi_df,
+    YEAR_COL,
+    COUNTRY_COL,
+    DI_COL,
+    HDI_COL,
+)
+from analysis.modeling.linear import do_linear_regression
+from analysis.modeling.mixed import do_mixed_linear_regression
+from analysis.transformation import *
+
+```
+
+```{python}
+df = get_joined_di_hdi_df()
+print(df.head(5))
+print(df.describe())
+```
+
+```{python}
+m1 = do_linear_regression(
+    df=df,
+    independent_cols=[YEAR_COL, DI_COL],
+    dependent_col=HDI_COL,
+)
+```
+We can assume linearity holds here, but homosceadasticity and independce are clearly violated.
+
+```{python}
+lag = 1
+HDI_LAG_COL = HDI_COL + "_lag_" + str(lag)
+df[HDI_LAG_COL] = df.groupby(COUNTRY_COL)[HDI_COL].shift(lag)
+
+m2 = do_linear_regression(
+    df=df,
+    independent_cols=[DI_COL, HDI_LAG_COL, YEAR_COL],
+    dependent_col=HDI_COL,
+)
+```
+Adding a lag to fix independence
+Although homosceadasticity fails with the BP Test, the visual test seems to hold and we can say this assumption holds. The R2 is very high which is most likely due to overfitting of the model due to the lag column we added. But as we can see the year is significant (p<0.05) which suggests time dependent change in HDI. DI is not significant (p>0.05). But the coefficiant is negative which is unexpected as we would assume HDI naturally increases over time. This most likely due to the lag overshadowing year affects. 
+We will explore the data more to make a our findings statistically more meaningful and also to check their correctness. Different lags were tried and the best was kept which also be the case in the following analysis. Different lags in the analysis have shown to not change the outcome significantly and neither fix any violated assumptions. 
+
+
+```{python}
+
+delta = 1
+
+HDI_DELTA_COL = HDI_COL + "_delta_" + str(delta)
+df[HDI_DELTA_COL] = df.groupby(COUNTRY_COL)[HDI_COL].diff(-delta).round(2).multiply(-1) / delta
+
+m3 = do_linear_regression(
+    df=df,
+    independent_cols=[DI_COL],
+    dependent_col=HDI_DELTA_COL,
+    col_to_transform={
+        HDI_DELTA_COL: lambda x: log_transform(x, scale=0.1)
+    }
+)
+```
+The Year column violated the linearity assumption and was removed in this test. Linearity otherwise seems to hold. 
+The visual shows that homosceadasticity holds well enough after a mild log transform. 
+DI is statistically insignificant (p > 0.05) and the R2 is extremly low which shows that DI has no statistically significant influence on the rate of change of HDI (here delta 1)
+
+
+```{python}
+
+delta = 1
+
+HDI_DELTA_COL = HDI_COL + "_delta_" + str(delta)
+df[HDI_DELTA_COL] = df.groupby(COUNTRY_COL)[HDI_COL].diff(-delta).round(2).multiply(-1)
+
+df_avg = df.groupby(COUNTRY_COL)[[DI_COL, HDI_DELTA_COL]].mean().reset_index()
+
+m4 = do_linear_regression(
+    df=df_avg,
+    independent_cols=[DI_COL],
+    dependent_col=HDI_DELTA_COL,
+    col_to_transform={
+        HDI_DELTA_COL: inverse_transform
+    }
+)
+
+```
+All assumptions hold here, which is a simplifoed check of the previous statistical test. 
+Also this model shows that the avg DI has no statistical significance (p > 0.05) on the avg rate of change of HDI. 
+Also the R2 shows that the model explains almost none of the variance in the rate of change in HDI. 
+
+
+```{python}
+
+```
