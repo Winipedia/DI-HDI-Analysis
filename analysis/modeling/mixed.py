@@ -14,7 +14,8 @@ def do_mixed_linear_regression(
         dependent_col: str,
         group_col: str,
         random_slope_cols: List[str] = None,
-        col_to_transform: Dict[str, Callable[[pd.Series], pd.Series]] = None
+        col_to_transform: Dict[str, Callable[[pd.Series], pd.Series]] = None,
+        fit_kwargs: dict = None,
 ) -> sm.regression.mixed_linear_model.MixedLMResults:
     """
     Performs a linear mixed-effects model using statsmodels and returns the fitted model.
@@ -25,6 +26,10 @@ def do_mixed_linear_regression(
     - `group_col`: Column name for grouping (random effects).
     - `col_to_transform`: Optional dictionary mapping column names to transformation functions.
     """
+
+    if not fit_kwargs:
+        fit_kwargs = {}
+
     df_copy = df.copy(deep=True)
     df_copy = df_copy[[*independent_cols, dependent_col, group_col]]
     df_copy = df_copy.dropna(how='any')
@@ -50,7 +55,7 @@ def do_mixed_linear_regression(
 
     # Fit the linear mixed model
     model = smf.mixedlm(formula, df_copy, groups=group_col, re_formula=re_formula)
-    model = model.fit()
+    model = model.fit(**fit_kwargs)
 
     # Check model assumptions
     check_mixed_linear_regression_assumptions(

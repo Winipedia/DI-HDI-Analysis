@@ -17,11 +17,17 @@ def do_linear_regression(
         df: pd.DataFrame, 
         independent_cols: List[str],
         dependent_col: str,
-        col_to_transform: Dict[str, Callable[[pd.Series], pd.Series]] = None
+        col_to_transform: Dict[str, Callable[[pd.Series], pd.Series]] = None,
+        fit_kwargs: dict = None,
 ) -> sm.OLS:
     """
     Performs linear regression using statsmodels and returns the fitted model.
     """
+    if not fit_kwargs:
+        fit_kwargs = {
+            "cov_type": "HC3"
+        }
+    
 
     df_copy = df.copy(deep=True)
     df_copy = df_copy[[*independent_cols, dependent_col]]
@@ -34,7 +40,7 @@ def do_linear_regression(
         col_to_transform=col_to_transform
     )
     x = sm.add_constant(x)  # Adds intercept term
-    model = sm.OLS(y, x).fit()
+    model = sm.OLS(y, x).fit(**fit_kwargs)
 
     check_linear_regression_assumptions(
         model=model,

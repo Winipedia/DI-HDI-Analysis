@@ -13,7 +13,6 @@ In the following DI will refer to the "democracy index"
 and HDI will refer to the "human development index".
 
 
-Imports
 ```{python}
 import sys
 sys.dont_write_bytecode = True
@@ -65,7 +64,6 @@ We will explore the data more to make a our findings statistically more meaningf
 ```{python}
 
 delta = 1
-
 HDI_DELTA_COL = HDI_COL + "_delta_" + str(delta)
 df[HDI_DELTA_COL] = df.groupby(COUNTRY_COL)[HDI_COL].diff(-delta).round(2).multiply(-1) / delta
 
@@ -86,7 +84,6 @@ DI is statistically insignificant (p > 0.05) and the R2 is extremly low which sh
 ```{python}
 
 delta = 1
-
 HDI_DELTA_COL = HDI_COL + "_delta_" + str(delta)
 df[HDI_DELTA_COL] = df.groupby(COUNTRY_COL)[HDI_COL].diff(-delta).round(2).multiply(-1)
 
@@ -109,4 +106,44 @@ Also the R2 shows that the model explains almost none of the variance in the rat
 
 ```{python}
 
+lag = 1
+HDI_LAG_COL = HDI_COL + "_lag_" + str(lag)
+df[HDI_LAG_COL] = df.groupby(COUNTRY_COL)[HDI_COL].shift(lag)
+
+m5 = do_mixed_linear_regression(
+    df=df,
+    independent_cols=[DI_COL, YEAR_COL, HDI_LAG_COL],
+    dependent_col=HDI_COL,
+    group_col='country',
+    random_slope_cols=None,
+    col_to_transform={},
+)
 ```
+The lag col was added to fix independence. The visual shows that the homoscedasticity assumption holds. 
+Also this mixed linear regression analysis confirms that DI is statistically insignificant (p > 0.05). However year is significant (p < 0.05) although the negative coefficiant suggests that HDI decreases over time which is historically not the case but is probably caused by the lag overshadowing year positive effects. 
+
+```{python}
+
+delta = 1
+HDI_DELTA_COL = HDI_COL + "_delta_" + str(delta)
+df[HDI_DELTA_COL] = df.groupby(COUNTRY_COL)[HDI_COL].diff(-delta).round(2).multiply(-1) / delta
+
+m5 = do_mixed_linear_regression(
+    df=df,
+    independent_cols=[DI_COL],
+    dependent_col=HDI_DELTA_COL,
+    group_col='country',
+    random_slope_cols=None,
+    col_to_transform={
+        DI_COL: z_score_transform,
+    },
+)
+```
+z-transorm was used on DI_COL to fix numerical instabilty because the model did not converge. 
+The homoscedasticity assumptions seems to hold in the visual well enough. 
+DI now has a statsitically significant affect on the rate of change of HDI (p < 0.05). 
+As this model accounts for country effects it is more reliable than the previous OLS regressions. 
+The analysis is robust with a 2322 observations across 166 groups (countries) and an average group size of 14. 
+However the conditional and marginal R^2 for this model are very low (0.02, 0.06) and suggest that altough the effect is statistically significant it explains almost none of the variance within the rate of change of HDI. 
+
+The analysis suggests that DI has almost no if any at all influence on the HDI of countries, which is counterintuitive on first thought but in line with findings of other studies I found. 
