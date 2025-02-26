@@ -1,5 +1,5 @@
 ---
-title: "Exploring the Impact of Freedom and Democracy on Quality of Life"
+title: "Exploring the Relationship Between Democracy and Human Development"
 author: "Win Steveker"
 date: "today"
 format:
@@ -9,9 +9,74 @@ format:
     number-sections: true
 ---
 
-In the following DI will refer to the "democracy index" 
-and HDI will refer to the "human development index".
+## Introduction
 
+The relationship between democracy and human development or quality of life is the subject of intense debate. Common sense would make one think that democratic governance leads to improved quality of life, given that democracies are presumed to provide greater political freedom, transparency, and accountability and should be providing a better environment for human development to grow.
+
+However, empirical evidence on this topic shows that there appears to be little to no direct relationship between Quality of Life and Democracy in countries. This seems counter-intuitive. With my analysis, I want to confirm or deny these findings and contribute to the discussion to see how levels of democracy impact human development. For this, I have two datasets that contain the Democracy Index (DI) and Human Development Index (HDI) to analyze and quantify their relationship.
+
+My hypothesis of this analysis is that higher levels of democracy, as measured by DI scores, are expected to correlate with improvements in human development, reflected in rising HDI values. Understanding why this is the case is critical, as it informs both academic debates and policy formulations. If democratic governance does not have the direct impact on human development that is often assumed, policymakers might need to focus on other factors, such as economic policies, effective governance, or targeted social interventions, to ensure improvements in quality of life within societies.
+
+## Data Description
+
+My analysis has two primary datasets: one for democratic governance and the other for human development outcomes.
+
+-   **The Democracy Index (DI) dataset** is compiled by the Economist Intelligence Unit and is accessible via Our World in Data. It measures the quality of democracy across countries by assessing factors such as electoral processes, political participation, civil liberties, and the functioning of government.\
+-   **The Human Development Index (HDI)** is sourced from the United Nations Development Programme (UNDP) and is a statistical composite index of life expectancy, education, and per capita income indicators.
+
+The datasets span multiple years (2006-2022 combined), which provides time and regional data on how democracy and human development evolve over time in each country. Both have a simple continuous measure that is ideal for regression analysis.
+
+Prior to analysis, the raw datasets were cleaned and preprocessed. The file `clean_data.py` outlines the procedures for this, but the main points are:
+
+-   **Unification of column names and types**: To simplify analysis and coding tasks later on. The `year` column became an integer, and column names were standardized.\
+-   **Scaling and Transformation**: Specific transformations were applied to standardize the scales of the indices. DI values were multiplied by 10 and HDI values by 100. The continuous nature of the indices allows scaling both without loss of information or proportion to a 0 to 100 scale for visual convenience, although it doesn’t matter for the analysis.\
+-   **Data Merging and Cleaning**: After cleaning the individual datasets, the two were merged on the `country` and `year` columns. The merged DataFrame was then sorted and filtered by country and year. A check showed that almost no or no data at all had to be dropped on the joined DataFrame, except for the non-overlapping countries and years if one was missing in one of the datasets.
+
+The datasets should allow for a comprehensive analysis of the relationship between the given variables.
+
+## Methods
+
+This project is a multi-method analytical approach to quantify the impact of democracy on human development. Methods used are:
+
+### 1. Ordinary Least Squares (OLS) Regression
+
+OLS regression serves as the initial analytical framework for examining the relationship between the Democracy Index (DI) and the Human Development Index (HDI). The analysis implements OLS models to quantify the direct effect DI has on HDI. Key steps in the OLS regression process include:
+
+-   **Variable Selection and Transformation**:\
+    Prior to fitting the model, independent and dependent variables are extracted from the data. Logarithmic or z-score transformations are applied as needed to stabilize variance and normalize distributions.\
+-   **Model Fitting**:\
+    An intercept term is added to the model, and the OLS model is fitted using the `statsmodels` library. The model summary includes regression coefficients, R-squared values, and statistical tests for significance.\
+-   **Diagnostic Checking**:\
+    I am checking all necessary assumptions for my models and adjusting settings and fittings as needed to make my model robust and statistically meaningful. Each assumption check includes a visual and formal check to evaluate if the model's assumptions all hold.
+
+While the OLS models provide a first overview of the data’s relationship, they cannot include the regional data given by the `country` column.
+
+### 2. Linear Mixed Effects Regression
+
+A limitation of traditional OLS regression is that the countries are missing from the analysis. To address this, I used mixed models, which allow for the incorporation of both fixed effects (capturing overall trends) and random effects (capturing country-specific deviations).
+
+-   **Model Structure**:\
+    The model has fixed effects for the Democracy Index and year and random effects for the country variable.\
+-   **Transformation and Preparation**:\
+    Transformations of the data were applied as needed.\
+-   **Diagnostic Evaluation**:\
+    Beyond the standard regression assumptions, mixed models have additional checks specific to random effects. These include:
+    -   Normality of random effects\
+    -   Independence between random effects and residuals\
+    -   Homoscedasticity of random effects across groups.\
+        Also here, I have a formal and visual test for each to allow for proper evaluation of whether assumptions hold.\
+-   **Model Interpretation**:\
+    I computed the marginal R² (explaining variance attributed solely to fixed effects) and conditional R² (explaining variance from both fixed and random effects). Also, the log-likelihood serves as a guide with the AIC on how well the model is tuned. As we mainly evaluate statistical significance, the p-values are the most interesting measures for us.
+
+### 3. Integration of Methods
+
+One of the strengths of this project is that it checks multiple possible relationships via different models. By applying multiple modeling techniques, the analysis is able to provide more meaning if all statistical models/tests come to the same conclusion or if they come to different significance outcomes it highlights what kind of relationship the variables have. For example, although the OLS model may show a weak or insignificant relationship between DI and HDI, the mixed-effects model can reveal whether country-level variations overshadow any underlying effects.
+
+## Analysis
+
+-   In the following DI will refer to the "democracy index"
+-   and HDI will refer to the "human development index".
+-   Homoscedasticity is not absolutely necessary as an assumption if we do not want to predict values but only check for statistical significance and as long as the visual test holds well enough (Residuals vs. Predicted), technical violations (Beusch-Pegan Test) can be ignored and the model is still robust. That is why in the following analysis we will often say that homoscedasticity is not violated although the formal Beusch-Pegan Test fails because the visual test is showing no bad enough violations of homoscedasticity
 
 ```{python}
 import sys
@@ -43,7 +108,8 @@ m1 = do_linear_regression(
     dependent_col=HDI_COL,
 )
 ```
-We can assume linearity holds here, but homosceadasticity and independce are clearly violated.
+
+We can assume linearity holds here, but homosceadasticity and independence are c
 
 ```{python}
 lag = 1
@@ -56,10 +122,8 @@ m2 = do_linear_regression(
     dependent_col=HDI_COL,
 )
 ```
-Adding a lag to fix independence
-Although homosceadasticity fails with the BP Test, the visual test seems to hold and we can say this assumption holds. The R2 is very high which is most likely due to overfitting of the model due to the lag column we added. But as we can see the year is significant (p<0.05) which suggests time dependent change in HDI. DI is not significant (p>0.05). But the coefficiant is negative which is unexpected as we would assume HDI naturally increases over time. This most likely due to the lag overshadowing year affects. 
-We will explore the data more to make a our findings statistically more meaningful and also to check their correctness. Different lags were tried and the best was kept which also be the case in the following analysis. Different lags in the analysis have shown to not change the outcome significantly and neither fix any violated assumptions. 
 
+Adding a lag to fix independence Although homosceadasticity fails with the BP Test, the visual test seems to hold and we can say this assumption holds. The R\^2 is very high which is most likely due to overfitting of the model due to the lag column we added. But as we can see the year is significant (p\<0.05) which suggests time dependent change in HDI. DI is not significant (p\>0.05). But the coefficiant of year is negative which is unexpected as we would assume HDI naturally increases over time. This most likely due to the lag overshadowing year affects. We will explore the data more to make our findings statistically more meaningful and also to check their correctness. Different lags were tried and the best was kept which also be the case in the following analysis. Different lags in the analysis have shown to not change the outcome significantly and neither fix any violated assumptions.
 
 ```{python}
 
@@ -76,10 +140,8 @@ m3 = do_linear_regression(
     }
 )
 ```
-The Year column violated the linearity assumption and was removed in this test. Linearity otherwise seems to hold. 
-The visual shows that homosceadasticity holds well enough after a mild log transform. 
-DI is statistically insignificant (p > 0.05) and the R2 is extremly low which shows that DI has no statistically significant influence on the rate of change of HDI (here delta 1)
 
+The Year column violated the linearity assumption and was removed in this test. Linearity otherwise seems to hold. The visual shows that homosceadasticity holds well enough after a mild log transform. DI is statistically insignificant (p \> 0.05) and the R2 is extremly low which shows that DI has no statistically significant influence on the rate of change of HDI (here delta 1)
 
 ```{python}
 
@@ -99,10 +161,8 @@ m4 = do_linear_regression(
 )
 
 ```
-All assumptions hold here, which is a simplifoed check of the previous statistical test. 
-Also this model shows that the avg DI has no statistical significance (p > 0.05) on the avg rate of change of HDI. 
-Also the R2 shows that the model explains almost none of the variance in the rate of change in HDI. 
 
+All assumptions hold here, which is a simplifoed check of the previous statistical test. Also this model shows that the avg DI has no statistical significance (p \> 0.05) on the avg rate of change of HDI. Also the R2 shows that the model explains almost none of the variance in the rate of change in HDI.
 
 ```{python}
 
@@ -114,13 +174,13 @@ m5 = do_mixed_linear_regression(
     df=df,
     independent_cols=[DI_COL, YEAR_COL, HDI_LAG_COL],
     dependent_col=HDI_COL,
-    group_col='country',
+    group_col=COUNTRY_COL,
     random_slope_cols=None,
     col_to_transform={},
 )
 ```
-The lag col was added to fix independence. The visual shows that the homoscedasticity assumption holds. 
-Also this mixed linear regression analysis confirms that DI is statistically insignificant (p > 0.05). However year is significant (p < 0.05) although the negative coefficiant suggests that HDI decreases over time which is historically not the case but is probably caused by the lag overshadowing year positive effects. 
+
+The lag col was added to fix independence. The visual shows that the homoscedasticity assumption holds. Also this mixed linear regression analysis confirms that DI is statistically insignificant (p \> 0.05). However year is significant (p \< 0.05) although the negative coefficiant suggests that HDI decreases over time which is historically not the case but is probably caused by the lag overshadowing year positive effects.
 
 ```{python}
 
@@ -132,18 +192,13 @@ m5 = do_mixed_linear_regression(
     df=df,
     independent_cols=[DI_COL],
     dependent_col=HDI_DELTA_COL,
-    group_col='country',
-    random_slope_cols=None,
+    group_col=COUNTRY_COL,
     col_to_transform={
         DI_COL: z_score_transform,
     },
 )
 ```
-z-transorm was used on DI_COL to fix numerical instabilty because the model did not converge. 
-The homoscedasticity assumptions seems to hold in the visual well enough. 
-DI now has a statsitically significant affect on the rate of change of HDI (p < 0.05). 
-As this model accounts for country effects it is more reliable than the previous OLS regressions. 
-The analysis is robust with a 2322 observations across 166 groups (countries) and an average group size of 14. 
-However the conditional and marginal R^2 for this model are very low (0.02, 0.06) and suggest that altough the effect is statistically significant it explains almost none of the variance within the rate of change of HDI. 
 
-The analysis suggests that DI has almost no if any at all influence on the HDI of countries, which is counterintuitive on first thought but in line with findings of other studies I found. 
+z-transform was used on DI_COL to fix numerical instability because the model did not converge. The homoscedasticity assumptions seems to hold in the visual well enough. DI now has a statistically significant affect on the rate of change of HDI (p \< 0.05). As this model accounts for country effects it is more reliable than the previous OLS regressions. The analysis is robust with a 2322 observations across 166 groups (countries) and an average group size of 14. However the conditional and marginal R\^2 for this model are very low (0.02, 0.06) and suggest that although the effect is statistically significant it explains almost none of the variance within the rate of change of HDI.
+
+The analysis suggests that DI has almost no if any at all influence on the HDI of countries, which is counter-intuitive on first thought but in line with findings of other studies I found.
