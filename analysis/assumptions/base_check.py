@@ -29,6 +29,7 @@ def check_assumptions(
 
 
 def show_plot(
+        formal_test_holds: bool,
         plot_func: callable,
         plot_func_args: tuple = tuple(),
         plot_func_kwargs: dict = None,
@@ -39,6 +40,9 @@ def show_plot(
         y0line: bool = False,
         pass_axis: bool = False,
 ):
+    if formal_test_holds and not isinstance(formal_test_holds, str):
+        return
+    
     if plot_func_kwargs is None:
         plot_func_kwargs = {}
     

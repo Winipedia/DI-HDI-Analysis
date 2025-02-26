@@ -77,6 +77,7 @@ One of the strengths of this project is that it checks multiple possible relatio
 -   In the following DI will refer to the "democracy index"
 -   and HDI will refer to the "human development index".
 -   Homoscedasticity is not absolutely necessary as an assumption if we do not want to predict values but only check for statistical significance and as long as the visual test holds well enough (Residuals vs. Predicted), technical violations (Beusch-Pegan Test) can be ignored and the model is still robust. That is why in the following analysis we will often say that homoscedasticity is not violated although the formal Beusch-Pegan Test fails because the visual test is showing no bad enough violations of homoscedasticity
+- Assumption plots are only shown if the formal test fails so that not too many visuals are displayed. 
 
 ```{python}
 import sys

@@ -83,6 +83,7 @@ def _check_normality_of_random_effects(model, **_):
     )
 
     show_plot(
+        formal_test_holds=holds,
         plot_func=sns.histplot,
         plot_func_kwargs=dict(data=re_values, kde=True),
         message=message,
@@ -90,6 +91,7 @@ def _check_normality_of_random_effects(model, **_):
     )
 
     show_plot(
+        formal_test_holds=holds,
         plot_func=sm.qqplot,
         plot_func_kwargs=dict(data=re_values, line='s'),
         message=message,
@@ -117,6 +119,7 @@ def _check_independence_of_random_effects_and_residuals(
     message = f"Correlation between Random Effects and Residuals: {correlation:.4f}, Independence Holds: {holds}"
 
     show_plot(
+        formal_test_holds=holds,
         plot_func=sns.scatterplot,
         plot_func_kwargs=dict(x=re_values, y=residuals[:len(re_values)]),
         message=message,
@@ -142,6 +145,7 @@ def _check_homoscedasticity_of_random_effects(
     message = f"Max/Min Variance Ratio: {variation_ratio:.2f}, Homoscedasticity Holds: {holds}"  
 
     show_plot(
+        formal_test_holds=holds,
         plot_func=sns.boxplot,
         plot_func_kwargs=dict(y=group_variances),
         message=message,

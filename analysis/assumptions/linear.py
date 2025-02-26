@@ -65,6 +65,7 @@ def _check_multicollinearity(
     )
 
     show_plot(
+        formal_test_holds=holds,
         plot_func=sns.heatmap,
         plot_func_kwargs=dict(data=corr_matrix, annot=True, cmap='coolwarm', fmt='.2f'),
         title="Correlation Matrix",
@@ -98,6 +99,7 @@ def _check_linearity(
     # For each independent variable produce a scatter plot with an annotation.
     for col in independent_cols.columns:
         show_plot(
+            formal_test_holds=holds,
             plot_func=sns.scatterplot,
             plot_func_kwargs=dict(x=independent_cols[col], y=dependent_col),
             message=msg,
@@ -135,6 +137,7 @@ def _check_outliers(
         )
         
         show_plot(
+            formal_test_holds=sub_holds,
             plot_func=sns.boxplot,
             plot_func_kwargs=dict(x=independent_cols[col]),
             message=msg,
@@ -170,6 +173,7 @@ def _check_homoscedasticity(
     )
 
     show_plot(
+        formal_test_holds=holds,
         plot_func=sns.scatterplot,
         plot_func_kwargs=dict(x=fitted_vals, y=residuals),
         message=message,
@@ -206,6 +210,7 @@ def _check_normality_of_residuals(
     )
 
     show_plot(
+        formal_test_holds=holds,
         plot_func=sns.histplot,
         plot_func_kwargs=dict(data=residuals, kde=True),
         message=message,
@@ -213,6 +218,7 @@ def _check_normality_of_residuals(
     )
 
     show_plot(
+        formal_test_holds=holds,
         plot_func=sm.qqplot,
         plot_func_kwargs=dict(data=residuals, line='s'),
         message=message,
@@ -240,6 +246,7 @@ def _check_independence(
     )
 
     show_plot(
+        formal_test_holds=holds,
         plot_func=plot_acf,
         plot_func_kwargs=dict(x=model.resid),
         message=message,
