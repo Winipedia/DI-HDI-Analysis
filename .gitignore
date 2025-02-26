@@ -1,4 +1,6 @@
 # ignore the qmd generations
+analysis.pdf
+analysis.tex
 analysis.html
 analysis_files/
 

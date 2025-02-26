@@ -1,13 +1,14 @@
 ---
 title: "Exploring the Relationship Between Democracy and Human Development"
 author: "Win Steveker"
-date: "today"
+date: today
 format:
-  html:
+  pdf:
     toc: true
-    toc-depth: 2
     number-sections: true
+    keep-tex: true  # Optional: Keep LaTeX file for debugging
 ---
+
 
 ## Introduction
 
