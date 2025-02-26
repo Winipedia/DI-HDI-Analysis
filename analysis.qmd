@@ -14,13 +14,13 @@ format:
 
 The relationship between democracy and human development or quality of life is the subject of intense debate. Common sense would make one think that democratic governance leads to improved quality of life, given that democracies are presumed to provide greater political freedom, transparency, and accountability and should be providing a better environment for human development to grow.
 
-However, empirical evidence on this topic shows that there appears to be little to no direct relationship between Quality of Life and Democracy in countries. This seems counter-intuitive. With my analysis, I want to confirm or deny these findings and contribute to the discussion to see how levels of democracy impact human development. For this, I have two datasets that contain the Democracy Index (DI) and Human Development Index (HDI) to analyze and quantify their relationship.
+However, empirical evidence on this topic shows that there appears to be little to no direct relationship between Quality of Life and Democracy in countries. This seems counter-intuitive. This analysis aims to confirm or deny these findings and contribute to the discussion to see how levels of democracy impact human development. For this, we have two datasets that contain the Democracy Index (DI) and Human Development Index (HDI) to analyze and quantify their relationship.
 
-My hypothesis of this analysis is that higher levels of democracy, as measured by DI scores, are expected to correlate with improvements in human development, reflected in rising HDI values. Understanding why this is the case is critical, as it informs both academic debates and policy formulations. If democratic governance does not have the direct impact on human development that is often assumed, policymakers might need to focus on other factors, such as economic policies, effective governance, or targeted social interventions, to ensure improvements in quality of life within societies.
+The hypothesis of this analysis is that higher levels of democracy, as measured by DI scores, are expected to correlate with improvements in human development, reflected in rising HDI values. Understanding why this is the case is critical, as it informs both academic debates and policy formulations. If democratic governance does not have the direct impact on human development that is often assumed, policymakers might need to focus on other factors, such as economic policies, effective governance, or targeted social interventions, to ensure improvements in quality of life within societies.
 
 ## Data Description
 
-My analysis has two primary datasets: one for democratic governance and the other for human development outcomes.
+The analysis has two primary datasets: one for democratic governance and the other for human development outcomes.
 
 -   **The Democracy Index (DI) dataset** is compiled by the Economist Intelligence Unit and is accessible via Our World in Data. It measures the quality of democracy across countries by assessing factors such as electoral processes, political participation, civil liberties, and the functioning of government.\
 -   **The Human Development Index (HDI)** is sourced from the United Nations Development Programme (UNDP) and is a statistical composite index of life expectancy, education, and per capita income indicators.
@@ -48,13 +48,13 @@ OLS regression serves as the initial analytical framework for examining the rela
 -   **Model Fitting**:\
     An intercept term is added to the model, and the OLS model is fitted using the `statsmodels` library. The model summary includes regression coefficients, R-squared values, and statistical tests for significance.\
 -   **Diagnostic Checking**:\
-    I am checking all necessary assumptions for my models and adjusting settings and fittings as needed to make my model robust and statistically meaningful. Each assumption check includes a visual and formal check to evaluate if the model's assumptions all hold.
+    We are checking all necessary assumptions for models and adjusting settings and fittings as needed to make models robust and statistically meaningful. Each assumption check includes a visual and formal check to evaluate if the model's assumptions all hold.
 
 While the OLS models provide a first overview of the data’s relationship, they cannot include the regional data given by the `country` column.
 
 ### Linear Mixed Effects Regression
 
-A limitation of traditional OLS regression is that the countries are missing from the analysis. To address this, I used mixed models, which allow for the incorporation of both fixed effects (capturing overall trends) and random effects (capturing country-specific deviations).
+A limitation of traditional OLS regression is that the countries are missing from the analysis. To address this, we used mixed models, which allow for the incorporation of both fixed effects (capturing overall trends) and random effects (capturing country-specific deviations).
 
 -   **Model Structure**:\
     The model has fixed effects for the Democracy Index and year and random effects for the country variable.\
@@ -65,9 +65,9 @@ A limitation of traditional OLS regression is that the countries are missing fro
     -   Normality of random effects\
     -   Independence between random effects and residuals\
     -   Homoscedasticity of random effects across groups.\
-        Also here, I have a formal and visual test for each to allow for proper evaluation of whether assumptions hold.\
+        Also here, a formal and visual test for each are implemented to allow for proper evaluation of whether assumptions hold.\
 -   **Model Interpretation**:\
-    I computed the marginal R² (explaining variance attributed solely to fixed effects) and conditional R² (explaining variance from both fixed and random effects). Also, the log-likelihood serves as a guide with the AIC on how well the model is tuned. As we mainly evaluate statistical significance, the p-values are the most interesting measures for us.
+    The marginal R² (explaining variance attributed solely to fixed effects) and conditional R² (explaining variance from both fixed and random effects) are computed for mixed models. Also, the log-likelihood serves as a guide with the AIC on how well the model is tuned. As we mainly evaluate statistical significance, the p-values are the most interesting measures for us.
 
 ## Conclusion
 
@@ -203,7 +203,7 @@ m5 = do_mixed_linear_regression(
 
 z-transform was used on DI_COL to fix numerical instability because the model did not converge. The homoscedasticity assumptions seems to hold in the visual well enough. DI now has a statistically significant affect on the rate of change of HDI (p \< 0.05). As this model accounts for country effects it is more reliable than the previous OLS regressions. The analysis is robust with a 2322 observations across 166 groups (countries) and an average group size of 14. However the conditional and marginal R\^2 for this model are very low (0.02, 0.06) and suggest that although the effect is statistically significant it explains almost none of the variance within the rate of change of HDI.
 
-The analysis suggests that DI has almost no if any at all influence on the HDI of countries, which is counter-intuitive on first thought but in line with findings of other studies I found.
+The analysis suggests that DI has almost no if any at all influence on the HDI of countries, which is counter-intuitive on first thought but in line with findings of other studies which came to the same surprising conclusion.
 
 ## Conclusion
 
