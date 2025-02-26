@@ -6,7 +6,6 @@ format:
   pdf:
     toc: true
     number-sections: true
-    keep-tex: true  # Optional: Keep LaTeX file for debugging
 ---
 
 
