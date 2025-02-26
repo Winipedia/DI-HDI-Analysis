@@ -86,7 +86,7 @@ def _check_linearity(
     """
     # Formal test
     independent_cols = independent_cols.drop(columns=['const'], errors='ignore')
-    holds = 'Evaluate linearity assumption in plots'
+    holds = 'Evaluate linearity assumption in the plot'
     msg = ""
     if isinstance(model, RegressionResultsWrapper):
         reset_test = linear_reset(model, power=2, use_f=True)
@@ -105,10 +105,6 @@ def _check_linearity(
             message=msg,
             title=f"Scatter Plot: {col} vs {dependent_col.name}",
         )
-        
-    # Final summary display for overall test.
-    summary_msg = f"Overall Linearity Check: {holds=}"
-    print(summary_msg)
     
     return holds
 
@@ -145,10 +141,6 @@ def _check_outliers(
         )
 
         holds = holds and sub_holds
-    
-    # Overall summary display
-    summary_msg = f"Overall Outlier Check: {holds=}"
-    print(summary_msg)
     
     return holds
 

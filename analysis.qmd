@@ -6,6 +6,7 @@ format:
   pdf:
     toc: true
     number-sections: true
+    geometry: "landscape"
 ---
 
 
@@ -38,7 +39,7 @@ The datasets should allow for a comprehensive analysis of the relationship betwe
 
 This project is a multi-method analytical approach to quantify the impact of democracy on human development. Methods used are:
 
-### 1. Ordinary Least Squares (OLS) Regression
+### Ordinary Least Squares (OLS) Regression
 
 OLS regression serves as the initial analytical framework for examining the relationship between the Democracy Index (DI) and the Human Development Index (HDI). The analysis implements OLS models to quantify the direct effect DI has on HDI. Key steps in the OLS regression process include:
 
@@ -51,7 +52,7 @@ OLS regression serves as the initial analytical framework for examining the rela
 
 While the OLS models provide a first overview of the data’s relationship, they cannot include the regional data given by the `country` column.
 
-### 2. Linear Mixed Effects Regression
+### Linear Mixed Effects Regression
 
 A limitation of traditional OLS regression is that the countries are missing from the analysis. To address this, I used mixed models, which allow for the incorporation of both fixed effects (capturing overall trends) and random effects (capturing country-specific deviations).
 
@@ -68,7 +69,7 @@ A limitation of traditional OLS regression is that the countries are missing fro
 -   **Model Interpretation**:\
     I computed the marginal R² (explaining variance attributed solely to fixed effects) and conditional R² (explaining variance from both fixed and random effects). Also, the log-likelihood serves as a guide with the AIC on how well the model is tuned. As we mainly evaluate statistical significance, the p-values are the most interesting measures for us.
 
-### 3. Integration of Methods
+## Conclusion
 
 One of the strengths of this project is that it checks multiple possible relationships via different models. By applying multiple modeling techniques, the analysis is able to provide more meaning if all statistical models/tests come to the same conclusion or if they come to different significance outcomes it highlights what kind of relationship the variables have. For example, although the OLS model may show a weak or insignificant relationship between DI and HDI, the mixed-effects model can reveal whether country-level variations overshadow any underlying effects.
 
@@ -110,7 +111,7 @@ m1 = do_linear_regression(
 )
 ```
 
-We can assume linearity holds here, but homosceadasticity and independence are c
+We can assume linearity holds here, but homosceadasticity and independence are clearly violated
 
 ```{python}
 lag = 1
@@ -163,7 +164,7 @@ m4 = do_linear_regression(
 
 ```
 
-All assumptions hold here, which is a simplifoed check of the previous statistical test. Also this model shows that the avg DI has no statistical significance (p \> 0.05) on the avg rate of change of HDI. Also the R2 shows that the model explains almost none of the variance in the rate of change in HDI.
+All assumptions hold here, which is a simplified check of the previous statistical test. Also this model shows that the avg DI has no statistical significance (p \> 0.05) on the avg rate of change of HDI. Also the R2 shows that the model explains almost none of the variance in the rate of change in HDI.
 
 ```{python}
 
