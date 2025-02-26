@@ -1,2 +1,6 @@
+# ignore the qmd generations
 analysis.html
-/analysis-files
+analysis_files/
+
+# ignore the python test file
+test.py
