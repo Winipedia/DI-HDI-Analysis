@@ -80,6 +80,37 @@ One of the strengths of this project is that it checks multiple possible relatio
 -   Homoscedasticity is not absolutely necessary as an assumption if we do not want to predict values but only check for statistical significance and as long as the visual test holds well enough (Residuals vs. Predicted), technical violations (Beusch-Pegan Test) can be ignored and the model is still robust. That is why in the following analysis we will often say that homoscedasticity is not violated although the formal Beusch-Pegan Test fails because the visual test is showing no bad enough violations of homoscedasticity
 - Assumption plots are only shown if the formal test fails so that not too many visuals are displayed. 
 
+### I coded the assumptions checking in a way that assumptions plots are only shown if an assumption fails. 
+Otherwise a summary dictionary is displayed for all assumptions that hold. The following is a short overview of what assumptions are checked and what plots are used and how it is interpreted: 
+
+### Linearity
+Linearity is evaluated via scatter plots. If the points show a linear trend, the assumption is supported.IndependenceIndependence can be visually depicted through an autocorrelation function (ACF) plot. If the residuals show no strong correlation over time lags, the independence assumption holds. The points should all be located inside the cloud.
+
+### Multicollinearity
+Multicollinearity is evaluated via a correlation matrix heatmap. Correlation coefficients greater than |0.8| are cause for concern.
+
+### Homoscedasticity
+Homoscedasticity is checked using the residuals vs fitted values scatter plot. Ideally, the points should be randomly and evenly distributed around the line.
+
+### Normality of Residuals
+Normality of the residuals is evaluated using a histogram and Q-Q plot. A histogram should yield a symmetric, bell-shaped distribution, and in the Q-Q plot, the residuals should fall in line with the diagonal line. If you have a sufficiently large sample size of residuals (30 observations per predictor), your model is fairly robust and not greatly impacted by non-normality due to the Central Limit Theorem.
+
+### Outliers
+Outliers in independent variables are evaluated with boxplots and z-scores. More too many outliers can influence the line of best fit, which can influence the model generation.
+
+### Normality of Random Effects 
+For mixed models, we can explore the distribution of random effects with the histogram and the Q-Q plot as previously instructed. 
+
+### Independence of Random Effects and Residuals 
+This assumption ensures that random effects and residuals are not correlated. You will check for patterns by plotting random effects against residuals in a scatterplot. If there are no patterns, our assumption is validated. 
+
+### Homoscedasticity of Random Effects
+To visualize group-level variances, we can use a boxplot. If the standard deviations appear similar across groups, our assumption is validated.  
+
+If these three assumptions hold to a sufficient degree, our model is more robust and has more statistical meaning.  
+
+
+
 ```{python}
 import sys
 sys.dont_write_bytecode = True
@@ -182,7 +213,7 @@ m5 = do_mixed_linear_regression(
 )
 ```
 
-The lag col was added to fix independence. The visual shows that the homoscedasticity assumption holds. Also this mixed linear regression analysis confirms that DI is statistically insignificant (p \> 0.05). However year is significant (p \< 0.05) although the negative coefficiant suggests that HDI decreases over time which is historically not the case but is probably caused by the lag overshadowing year positive effects.
+The lag col was added to fix independence. By adding a column that has the previous year as a value we allow the regression to pick up on the actual correlations and avoid autocorrelation. The visual shows that the homoscedasticity assumption holds. Also this mixed linear regression analysis confirms that DI is statistically insignificant (p \> 0.05). However year is significant (p \< 0.05) although the negative coefficiant suggests that HDI decreases over time which is historically not the case but is probably caused by the lag overshadowing year positive effects.
 
 ```{python}
 
@@ -209,3 +240,43 @@ The analysis suggests that DI has almost no if any at all influence on the HDI o
 
 The results of this analysis suggest that, on the contrary to common assumptions, the direct influence of democratic governance on human development is minimal and not significant. The OLS regressions initially showed that the Democracy Index (DI) is statistically insignificant when predicting the Human Development Index (HDI), a finding that persisted even when accounting for lagged effects to address independence issues and after all assumptions were fixed and the models were robust. Only in the mixed-effects model, where country-specific variations were properly accounted for, which might have hidden DIs effects on HDI in the preovious models, did DI show a statistically significant affect on the rate of change of HDI. However, the effect size remained extremely low, as indicated by the very low conditional and marginal R² values.
 These findings imply that although democracies are often presumed to be environments that enhance quality of life, the empirical evidence here suggests that the relationship is far more nuanced if existent at all. It appears that other factors, such as perhaps economic policies, governance quality, or targeted social interventions, may play a more pivotal role in driving human development outcomes. Overall, this analysis reinforces the view that the assumed direct link between democracy and human development is not as straightforward as it may seem.
+
+
+To make some further investigations we want to check if maybe a certain threshhold needs to be reached for democracy to have a significant effect on hdi and the other data as just overshadowed that effect. 
+
+```{python}
+# Define quantile bins
+quantile = 0.9
+q_value = df[DI_COL].quantile(quantile)
+print(f"Quantile {quantile} value for {DI_COL}: {q_value}.")
+df_q = df[df[DI_COL] >= q_value]
+
+model_result = do_linear_regression(
+    df=df_q,
+    independent_cols=[DI_COL, YEAR_COL],
+    dependent_col=HDI_DELTA_COL
+)
+```
+The analysis of the top 10% of democracies shows that even in this group, the Democracy Index (DI) does not have a statistically significant effect on the rate of change of the Human Development
+Index (HDI). This further supports the conclusion from above. 
+No assumptions were violated which makes this result very meaningful. All this further supports the conclusion that there is no effect of DI on HDI.
+
+
+```{python}
+quantile = 0.1
+q_value = df[DI_COL].quantile(quantile)
+df_q = df[df[DI_COL] <= q_value]
+model_result = do_linear_regression(
+    df=df_q,
+    independent_cols=[DI_COL, YEAR_COL],
+    dependent_col=HDI_DELTA_COL
+)
+```
+
+The analysis of the bottom 10% of democracies also shows that even in this group, the Democracy Index (DI) does not have a statistically significant effect on the rate of change of the Human Development Index (HDI). This further supports the conclusion from above. In fact before DI was statistically significant but the R\^2 was very low which shows that even though it was statistically significant it had almost no effect on the rate of change of HDI and explained almost none of the variance in the rate of change of HDI.
+However for the bottom 10% of democracies the R\^2 is as well low but the p-value for DI is above 0.05 which shows that for the bottom 10% of democracies there is no effect at all of DI on HDI. 
+The linearity assumption holds well enough and the independece assumptiom is only slightly violated and only on the first point therefore we can say that the assumption holds and our model is statistically meaningful and robust.
+
+
+```{python}
+```
