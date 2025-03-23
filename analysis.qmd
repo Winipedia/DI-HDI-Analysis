@@ -275,7 +275,7 @@ model_result = do_linear_regression(
 
 The analysis of the bottom 10% of democracies also shows that even in this group, the Democracy Index (DI) does not have a statistically significant effect on the rate of change of the Human Development Index (HDI). This further supports the conclusion from above. In fact before DI was statistically significant but the R\^2 was very low which shows that even though it was statistically significant it had almost no effect on the rate of change of HDI and explained almost none of the variance in the rate of change of HDI.
 However for the bottom 10% of democracies the R\^2 is as well low but the p-value for DI is above 0.05 which shows that for the bottom 10% of democracies there is no effect at all of DI on HDI. 
-The linearity assumption holds well enough and the independece assumptiom is only slightly violated and only on the first point therefore we can say that the assumption holds and our model is statistically meaningful and robust.
+The linearity assumption holds well enough, we have only two outliers which is not very significant compred to the numbre of observation and can be ignored therefore, and the independece assumptiom is only slightly violated and only on the first point therefore we can say that the assumption holds and our model is statistically meaningful and robust.
 
 
 ```{python}
