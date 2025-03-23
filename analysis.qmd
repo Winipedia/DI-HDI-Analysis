@@ -10,7 +10,7 @@ format:
 ---
 
 
-## Introduction
+# Introduction
 
 The relationship between democracy and human development or quality of life is the subject of intense debate. Common sense would make one think that democratic governance leads to improved quality of life, given that democracies are presumed to provide greater political freedom, transparency, and accountability and should be providing a better environment for human development to grow.
 
@@ -18,7 +18,7 @@ However, empirical evidence on this topic shows that there appears to be little 
 
 The hypothesis of this analysis is that higher levels of democracy, as measured by DI scores, are expected to correlate with improvements in human development, reflected in rising HDI values. Understanding why this is the case is critical, as it informs both academic debates and policy formulations. If democratic governance does not have the direct impact on human development that is often assumed, policymakers might need to focus on other factors, such as economic policies, effective governance, or targeted social interventions, to ensure improvements in quality of life within societies.
 
-## Data Description
+# Data Description
 
 The analysis has two primary datasets: one for democratic governance and the other for human development outcomes.
 
@@ -35,76 +35,72 @@ Prior to analysis, the raw datasets were cleaned and preprocessed. The file `cle
 
 The datasets should allow for a comprehensive analysis of the relationship between the given variables.
 
-## Methods
+# Methods
 
 This project is a multi-method analytical approach to quantify the impact of democracy on human development. Methods used are:
 
-### Ordinary Least Squares (OLS) Regression
-
-OLS regression serves as the initial analytical framework for examining the relationship between the Democracy Index (DI) and the Human Development Index (HDI). The analysis implements OLS models to quantify the direct effect DI has on HDI. Key steps in the OLS regression process include:
-
--   **Variable Selection and Transformation**:\
-    Prior to fitting the model, independent and dependent variables are extracted from the data. Logarithmic or z-score transformations are applied as needed to stabilize variance and normalize distributions.\
--   **Model Fitting**:\
-    An intercept term is added to the model, and the OLS model is fitted using the `statsmodels` library. The model summary includes regression coefficients, R-squared values, and statistical tests for significance.\
--   **Diagnostic Checking**:\
-    We are checking all necessary assumptions for models and adjusting settings and fittings as needed to make models robust and statistically meaningful. Each assumption check includes a visual and formal check to evaluate if the model's assumptions all hold.
+## Ordinary Least Squares (OLS) Regression
+OLS is a method for estimating the unknown parameters in a linear regression model. It minimizes the sum of squared differences between the observed and predicted values, providing a straightforward way to understand the relationship between variables or to say it very simple it finds the line of best fit for the data ad variables given. It assumes a linear relationship bewtween the independent and dependent variables and is sensitive to outliers and multicollinearity. OLS regression is a good starting point for understanding the relationship between variables. 
+OLS regression serves as the initial analytical framework for examining the relationship between the Democracy Index (DI) and the Human Development Index (HDI). The analysis implements OLS models to quantify the direct effect DI has on HDI. The following were the key steps taken in the OLS regression analysis:
+Prior to fitting the model, independent and dependent variables are extracted from the data. Logarithmic or z-score transformations are applied as needed to stabilize variance and normalize distributions.
+An intercept term is added to the model, and the OLS model is fitted using the `statsmodels` library. The model summary includes regression coefficients, R-squared values, and statistical tests for significance.
+We are checking all necessary assumptions for models and adjusting settings and fittings as needed to make models robust and statistically meaningful. Each assumption check includes a visual and formal check to evaluate if the model's assumptions all hold.
 
 While the OLS models provide a first overview of the data’s relationship, they cannot include the regional data given by the `country` column.
 
-### Linear Mixed Effects Regression
+## Linear Mixed Effects Regression
 
-A limitation of traditional OLS regression is that the countries are missing from the analysis. To address this, we used mixed models, which allow for the incorporation of both fixed effects (capturing overall trends) and random effects (capturing country-specific deviations).
+A limitation of traditional OLS regression is that the countries are missing from the analysis. To address this, we used mixed models, which allow for the incorporation of both fixed effects (capturing overall trends) and random effects (capturing country-specific deviations). 
+Mixed models are able to assign a random effect to each level (here the countries) of the data, assuming that we each level has its own effect on the data and tries to account for that in the variances of predictions. 
+This makes a lot of sense for our data as each country definetly has its own effects on HDI and DI, like war, pandemics, economic boom/crisis, new laws or a putch in government (e.g. Afghanistan). 
+As we have not many varaibles in our data this is prone to overfitting, which is one limitatio of this approach. 
+Otherwise mixed models work similar to OLS models and have their basis in linear algebra and belong to the group of linear models. 
+We use this to check if countries random effects are not overshadowing DIs and HIDs relationship in our OLS approach. By doing this we try to validate or invalidate our other findings. 
+The model fitting process went as follows: 
+The model has fixed effects for the Democracy Index and year and random effects for the country variable.
+Transformations of the data were applied as needed to fix assumptions or numerical instability. 
+Beyond the standard regression assumptions, mixed models have additional checks specific to random effects. These include: Normality of random effects, Independence between random effects and residuals, Homoscedasticity of random effects across groups. 
+Also here, a formal and visual test for each are implemented to allow for proper evaluation of whether assumptions hold.
+The marginal R² (explaining variance attributed solely to fixed effects) and conditional R² (explaining variance from both fixed and random effects) are computed for mixed models by me additionally to the normal model summary that is provided by the statsmodels library. 
+Also, the log-likelihood serves as a guide with the AIC on how well the model is tuned, a higher value in log-likelyhood and AIC indicate a better model. As we mainly evaluate statistical significance, the p-values are the most interesting measures for us, as we do not intend to predict but only evaluate if there is a significant 
+relationship between the variables DI and HDI. 
 
--   **Model Structure**:\
-    The model has fixed effects for the Democracy Index and year and random effects for the country variable.\
--   **Transformation and Preparation**:\
-    Transformations of the data were applied as needed.\
--   **Diagnostic Evaluation**:\
-    Beyond the standard regression assumptions, mixed models have additional checks specific to random effects. These include:
-    -   Normality of random effects\
-    -   Independence between random effects and residuals\
-    -   Homoscedasticity of random effects across groups.\
-        Also here, a formal and visual test for each are implemented to allow for proper evaluation of whether assumptions hold.\
--   **Model Interpretation**:\
-    The marginal R² (explaining variance attributed solely to fixed effects) and conditional R² (explaining variance from both fixed and random effects) are computed for mixed models. Also, the log-likelihood serves as a guide with the AIC on how well the model is tuned. As we mainly evaluate statistical significance, the p-values are the most interesting measures for us.
-
-## Conclusion
+# Conclusion
 
 One of the strengths of this project is that it checks multiple possible relationships via different models. By applying multiple modeling techniques, the analysis is able to provide more meaning if all statistical models/tests come to the same conclusion or if they come to different significance outcomes it highlights what kind of relationship the variables have. For example, although the OLS model may show a weak or insignificant relationship between DI and HDI, the mixed-effects model can reveal whether country-level variations overshadow any underlying effects.
 
-## Analysis
+# Analysis
 
+## Some notes
+- Using landscape mode for the PDF output because some plots and model summaries are too wide for the default portrait mode and get cut off at the right side. 
 -   In the following DI will refer to the "democracy index"
 -   and HDI will refer to the "human development index".
--   Homoscedasticity is not absolutely necessary as an assumption if we do not want to predict values but only check for statistical significance and as long as the visual test holds well enough (Residuals vs. Predicted), technical violations (Beusch-Pegan Test) can be ignored and the model is still robust. That is why in the following analysis we will often say that homoscedasticity is not violated although the formal Beusch-Pegan Test fails because the visual test is showing no bad enough violations of homoscedasticity
-- Assumption plots are only shown if the formal test fails so that not too many visuals are displayed. 
+-   Homoscedasticity is not absolutely necessary as an assumption if we do not want to predict values but only check for statistical significance and as long as the visual test holds well enough (Residuals vs. Predicted), technical violations (Beusch-Pegan Test) can be ignored and the model is still robust. That is why in the following analysis we will often say that homoscedasticity is not violated although the formal Beusch-Pegan Test fails because the visual test is showing no bad enough violations of homoscedasticity to make our model insignificant. We could say that anyway but this makes it even more valid. 
+- I coded the assumptions checking in a way that assumptions plots are only shown if an assumption fails. 
+Otherwise a summary dictionary is displayed for all assumptions that hold. The following is a short overview of what assumptions are checked and what plots are used and how it is interpreted.
 
-### I coded the assumptions checking in a way that assumptions plots are only shown if an assumption fails. 
-Otherwise a summary dictionary is displayed for all assumptions that hold. The following is a short overview of what assumptions are checked and what plots are used and how it is interpreted: 
-
-### Linearity
+## Linearity
 Linearity is evaluated via scatter plots. If the points show a linear trend, the assumption is supported.IndependenceIndependence can be visually depicted through an autocorrelation function (ACF) plot. If the residuals show no strong correlation over time lags, the independence assumption holds. The points should all be located inside the cloud.
 
-### Multicollinearity
+## Multicollinearity
 Multicollinearity is evaluated via a correlation matrix heatmap. Correlation coefficients greater than |0.8| are cause for concern.
 
-### Homoscedasticity
+## Homoscedasticity
 Homoscedasticity is checked using the residuals vs fitted values scatter plot. Ideally, the points should be randomly and evenly distributed around the line.
 
-### Normality of Residuals
+## Normality of Residuals
 Normality of the residuals is evaluated using a histogram and Q-Q plot. A histogram should yield a symmetric, bell-shaped distribution, and in the Q-Q plot, the residuals should fall in line with the diagonal line. If you have a sufficiently large sample size of residuals (30 observations per predictor), your model is fairly robust and not greatly impacted by non-normality due to the Central Limit Theorem.
 
-### Outliers
+## Outliers
 Outliers in independent variables are evaluated with boxplots and z-scores. More too many outliers can influence the line of best fit, which can influence the model generation.
 
-### Normality of Random Effects 
+## Normality of Random Effects 
 For mixed models, we can explore the distribution of random effects with the histogram and the Q-Q plot as previously instructed. 
 
-### Independence of Random Effects and Residuals 
+## Independence of Random Effects and Residuals 
 This assumption ensures that random effects and residuals are not correlated. You will check for patterns by plotting random effects against residuals in a scatterplot. If there are no patterns, our assumption is validated. 
 
-### Homoscedasticity of Random Effects
+## Homoscedasticity of Random Effects
 To visualize group-level variances, we can use a boxplot. If the standard deviations appear similar across groups, our assumption is validated.  
 
 If these three assumptions hold to a sufficient degree, our model is more robust and has more statistical meaning.  
@@ -142,7 +138,7 @@ m1 = do_linear_regression(
 )
 ```
 
-We can assume linearity holds here, but homosceadasticity and independence are clearly violated
+We can assume linearity holds here, but homosceadasticity and independence are clearly violated, as can be seen in the plots. We can not use this first model for interpretation as too many assumptions are violated that indicate that p values and the model itself are not significant nor robust. 
 
 ```{python}
 lag = 1
@@ -156,7 +152,7 @@ m2 = do_linear_regression(
 )
 ```
 
-Adding a lag to fix independence Although homosceadasticity fails with the BP Test, the visual test seems to hold and we can say this assumption holds. The R\^2 is very high which is most likely due to overfitting of the model due to the lag column we added. But as we can see the year is significant (p\<0.05) which suggests time dependent change in HDI. DI is not significant (p\>0.05). But the coefficiant of year is negative which is unexpected as we would assume HDI naturally increases over time. This most likely due to the lag overshadowing year affects. We will explore the data more to make our findings statistically more meaningful and also to check their correctness. Different lags were tried and the best was kept which also be the case in the following analysis. Different lags in the analysis have shown to not change the outcome significantly and neither fix any violated assumptions.
+The violated independence assumption means that our data is autrocorrelated. Basically the value of HDI is to dependent on its previous value. This makes sense because how would the level of HDI change very significantly compared to its previous value within just one year. To fix this violated assumption I added a lag column to fix independence. This way the precious year is part of the independent variables and the OLS should be able to catch DIs and YEAR effects better. Although homosceadasticity fails with the BP Test, the visual test seems to hold well enough and we can say this assumption holds. The R\^2 is very high which is most likely due to overfitting of the model due to the lag column we added. But as we can see the year is significant (p\<0.05) which suggests time dependent change in HDI. DI is not significant (p\>0.05). But the coefficiant of year is negative which is unexpected as we would assume HDI naturally increases over time. This most likely due to the lag overshadowing year affects. We will explore the data more to make our findings statistically more meaningful and also to check their correctness. Different lags were tried and the best was kept which also will be the case in the rest of the following analysis. Different lags in the analysis have shown to not change the outcome significantly and neither fix any violated assumptions. We can already use this model for interpretation but have to confirm the findings with the rest of our analysis. This model indicates that DI is not a significant predictor of HDI and has almost no effect on it. 
 
 ```{python}
 
@@ -174,7 +170,8 @@ m3 = do_linear_regression(
 )
 ```
 
-The Year column violated the linearity assumption and was removed in this test. Linearity otherwise seems to hold. The visual shows that homosceadasticity holds well enough after a mild log transform. DI is statistically insignificant (p \> 0.05) and the R2 is extremly low which shows that DI has no statistically significant influence on the rate of change of HDI (here delta 1)
+To investigate if DI maybe has an effect on the rate of change of HDI (delta HDI) rather than on HDI itself we added a delta column with a delta/lag of 1, subtracting the previous year from the current one. 
+The Year column violated the linearity assumption and was removed in this test. Linearity otherwise seems to hold. The visual shows that homosceadasticity holds well enough after a mild log transform. DI is statistically insignificant (p \> 0.05) and the R2 is extremly low which shows that DI has no statistically significant influence on the rate of change of HDI. This test as well shows the same conclusion as before. 
 
 ```{python}
 
@@ -195,7 +192,9 @@ m4 = do_linear_regression(
 
 ```
 
-All assumptions hold here, which is a simplified check of the previous statistical test. Also this model shows that the avg DI has no statistical significance (p \> 0.05) on the avg rate of change of HDI. Also the R2 shows that the model explains almost none of the variance in the rate of change in HDI.
+In this model we only took the average values from DI and HDI delta, to see if we maybe get a different result by simplifying the data. 
+All assumptions hold here in this simplified check of the previous statistical test. Also this model shows that the avg DI has no statistical significance (p \> 0.05) on the average rate of change of HDI. Also the R\^2 shows that the model explains almost none of the variance in the rate of change in HDI. This result again confirms our findings from above so far. 
+Now the effects of DI on HDI could have been overshadowed by country effects. To account for this we will now use mixed effects models to account for random effects within the data grouped by country. 
 
 ```{python}
 
@@ -213,7 +212,7 @@ m5 = do_mixed_linear_regression(
 )
 ```
 
-The lag col was added to fix independence. By adding a column that has the previous year as a value we allow the regression to pick up on the actual correlations and avoid autocorrelation. The visual shows that the homoscedasticity assumption holds. Also this mixed linear regression analysis confirms that DI is statistically insignificant (p \> 0.05). However year is significant (p \< 0.05) although the negative coefficiant suggests that HDI decreases over time which is historically not the case but is probably caused by the lag overshadowing year positive effects.
+The lag col was added to fix independence like before. By adding a column that has the previous year as a value we allow the regression to pick up on the actual correlations and avoid autocorrelation. The visual shows that the homoscedasticity assumption holds. Also this mixed linear regression analysis confirms that DI is statistically insignificant (p \> 0.05). However year is significant (p \< 0.05) although the negative coefficiant suggests that HDI decreases over time which is historically not the case but is probably caused by the lag overshadowing the year columns positive effects.
 
 ```{python}
 
@@ -232,11 +231,11 @@ m5 = do_mixed_linear_regression(
 )
 ```
 
-z-transform was used on DI_COL to fix numerical instability because the model did not converge. The homoscedasticity assumptions seems to hold in the visual well enough. DI now has a statistically significant affect on the rate of change of HDI (p \< 0.05). As this model accounts for country effects it is more reliable than the previous OLS regressions. The analysis is robust with a 2322 observations across 166 groups (countries) and an average group size of 14. However the conditional and marginal R\^2 for this model are very low (0.02, 0.06) and suggest that although the effect is statistically significant it explains almost none of the variance within the rate of change of HDI.
+Now we also check the delta column with our mixed effects model. We had to apply a 
+z-transform on the DI_COL to fix numerical instability because the model did not converge. The homoscedasticity assumptions seems to hold in the visual well enough. DI now has a statistically significant affect on the rate of change of HDI (p \< 0.05). As this model accounts for country effects it is more reliable than the previous OLS regressions. The analysis is robust with a 2322 observations across 166 groups (countries) and an average group size of 14. However the conditional and marginal R\^2 for this model are very low (0.02, 0.06) and suggest that although the effect is statistically significant it explains almost none of the variance within the rate of change of HDI.
+The results of this models analysis suggest that DI has almost no if any at all influence on the HDI of countries, which is counter-intuitive on first thought but in line with findings of other studies which came to the same surprising conclusion as explained below in further sections. 
 
-The analysis suggests that DI has almost no if any at all influence on the HDI of countries, which is counter-intuitive on first thought but in line with findings of other studies which came to the same surprising conclusion.
-
-## Conclusion
+# Conclusion
 
 The results of this analysis suggest that, on the contrary to common assumptions, the direct influence of democratic governance on human development is minimal and not significant. The OLS regressions initially showed that the Democracy Index (DI) is statistically insignificant when predicting the Human Development Index (HDI), a finding that persisted even when accounting for lagged effects to address independence issues and after all assumptions were fixed and the models were robust. Only in the mixed-effects model, where country-specific variations were properly accounted for, which might have hidden DIs effects on HDI in the preovious models, did DI show a statistically significant affect on the rate of change of HDI. However, the effect size remained extremely low, as indicated by the very low conditional and marginal R² values.
 These findings imply that although democracies are often presumed to be environments that enhance quality of life, the empirical evidence here suggests that the relationship is far more nuanced if existent at all. It appears that other factors, such as perhaps economic policies, governance quality, or targeted social interventions, may play a more pivotal role in driving human development outcomes. Overall, this analysis reinforces the view that the assumed direct link between democracy and human development is not as straightforward as it may seem.
@@ -257,6 +256,7 @@ model_result = do_linear_regression(
     dependent_col=HDI_DELTA_COL
 )
 ```
+
 The analysis of the top 10% of democracies shows that even in this group, the Democracy Index (DI) does not have a statistically significant effect on the rate of change of the Human Development
 Index (HDI). This further supports the conclusion from above. 
 No assumptions were violated which makes this result very meaningful. All this further supports the conclusion that there is no effect of DI on HDI.
@@ -275,8 +275,37 @@ model_result = do_linear_regression(
 
 The analysis of the bottom 10% of democracies also shows that even in this group, the Democracy Index (DI) does not have a statistically significant effect on the rate of change of the Human Development Index (HDI). This further supports the conclusion from above. In fact before DI was statistically significant but the R\^2 was very low which shows that even though it was statistically significant it had almost no effect on the rate of change of HDI and explained almost none of the variance in the rate of change of HDI.
 However for the bottom 10% of democracies the R\^2 is as well low but the p-value for DI is above 0.05 which shows that for the bottom 10% of democracies there is no effect at all of DI on HDI. 
-The linearity assumption holds well enough, we have only two outliers which is not very significant compred to the numbre of observation and can be ignored therefore, and the independece assumptiom is only slightly violated and only on the first point therefore we can say that the assumption holds and our model is statistically meaningful and robust.
+The linearity assumption holds well enough, we have only two outliers which is not very significant compred to the numbre of observation and can be ignored therefore, and the independece assumptiom is only slightly violated and only on the first point therefore we can say that the assumption holds and our model is statistically meaningful and robust. 
+Another clear finding is that HDI is effected positively by time and increases naturally, which makes sense becuase the average citizen today has better living conditions than nobels in midevial times, meaning technology and inventions will improve life naturally over time as they spread even faster nowadays around the world. 
 
+# Limitations
+While our statistics based on our data is robust and results indicate that there is no significant effect of DI on HDI, there are limitations to this analysis. The data used is only from 2006-2022 and therefore does not account for long-term trends aside from that time span. There might be just be more longterm data necessary to capture the real effects which perhaps are so small they are not visible as HDI is a slowly moving index measure anyway and democracies effects might only be visible with longer and more observations. Also the data is only from two indices which do not capture all aspects of democracy and human development. Other factors such as economic policies, governance quality, or targeted social interventions may play a more pivotal role in driving human development. But as our hypothisis was only about the DI and HDI we can only conclude that there is no effect of DI on HDI and not that there is no effect of democracy on HDI. Further research with more data and other factors included is necessary to make a more robust conclusion on the relationship between democracy and human development.
+We had to make several assumption fixes and model adjustments, like adding lags or transformations, to make the models robust and statistically meaningful. This might have introduced some bias in the analysis and/or distorted the results. 
+Furthermore, effects by each country and special situations during history that might have affected our data are only partially handled by the random effects in the mixed model. There might be other factors that we did not account for that could have influenced our results. For example in Afghanistan the Taliban took over in 2021 which has a big effect on HDI and DI and if enough of such examples are in our data it could skew our results and make results less meaningful as we would draw conclusions from a skewed data set and we do not see the full picture of the data. Otherwise our data is very reliable as the sources and the data collection methods are very robust and well documented as well as thoroughly cleaned and preprocessed as dexcibed above. Nevertheless, the data is not perfect and has limitations as described above.
 
-```{python}
-```
+# References
+There have of course been other studies on this topic, that asked the same or similar questions. Here is an overview of some of them:
+
+## Flavin, P. (2024). Democracy and Life Satisfaction: Evidence from Updated Global Data. Social Indicators Research, 174(2), 409–419. https://doi.org/10.1007/s11205-024-03392-x
+This study investigates the relationship between democracy and life satisfaction using recent Gallup World Poll data. Flavin finds that standard measures of democracy are not significantly related to life satisfaction, but government effectiveness—a component of democratic quality—is. This supports the idea that procedural democracy may matter less than governance quality for societal outcomes, a nuance relevant to interpreting HDI results.
+
+## Rode, M., Knoll, B., & Pitlik, H. (2013). Economic Freedom, Democracy, and Life Satisfaction. In Economic Freedom of the World: 2013 Annual Report (pp. 215–233). Vancouver: Economic Freedom Network.
+This article explores how democracy interacts with economic freedom to influence life satisfaction and quality of life. The findings suggest that democracy may only lead to improved development outcomes if economic institutions are supportive—an insight useful when considering DI in isolation.
+
+## Müller, S. (n.d.). Model Selection in Linear Mixed Models.
+This methodological review discusses various model selection strategies for linear mixed models, including AIC, BIC, and regularization techniques. The paper provides guidance on best practices for handling longitudinal and hierarchical data structures, relevant to the mixed models used in this analysis.
+
+## Ott, J. C. (2011). Government and Happiness in 130 Nations: Good Governance Fosters Higher Level and More Equality of Happiness. Social Indicators Research, 102(1), 3–22.
+Ott explores how aspects of governance quality—not just democratic process—correlate with national happiness. This parallels the finding in this project that democracy itself may not significantly drive HDI, while governance capacity could.
+
+## Woo, C. (2018). Good Governance and Happiness: Does Technical Quality of Governance Lead to Happiness Universally in Both Rich and Poor Countries? Journal of International and Area Studies, 25(1), 37–56.
+This article provides additional support for the argument that technical quality—such as regulatory quality and corruption control—is more predictive of societal outcomes like life satisfaction than democracy per se, especially across different income groups.
+
+## Bjørnskov, C., Dreher, A., Fischer, J. A. V. (2010). Formal Institutions and Subjective Well-Being: Revisiting the Cross-Country Evidence. European Journal of Political Economy, 26(4), 419–430.
+This study adds nuance by suggesting that democracy's impact on well-being may depend on a country's income level—a consideration that parallels the idea that democracy's effect on HDI could vary by development stage.
+
+# Possible Future Work
+As DI seems to not have a significant effect on HDI, we should consider what does instead. The goal should be to maxmize HDI worldwide. Therefore we should look at other factors that influence HDI. 
+This could be important to know as it would allow more efficient allocation of resources and more targeted policies to improve HDI.
+Other factors could be, excluding the ones which the index is made of: Economic policies, Governance quality, Targeted social interventions, Education policies, Healthcare policies, Infrastructure development, Environmental policies, and Technological advancements as well as GDP overall and per capita.
+I think looking at policies and clustering them in their intended effect could be interesting to see if there are significant relationships. 
