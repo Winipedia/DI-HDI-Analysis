@@ -320,4 +320,4 @@ plt.tight_layout()
 plt.show()
 ```
 
-As we can see in @fig:di_hdi_scatter there is no clear relationship between the two variables. The red line shows the line of best fit and as we can see there is no clear trend or correlation between the two variables. This visualizes our conclusion that there is no significant relationship between DI and HDI.
+As we can see in @fig:di_hdi_scatter there is no clear relationship between the two variables. The red line shows the line of best fit and as we can see there is no clear trend or correlation between the two variables. This visualizes our conclusion that there is no significant relationship between DI and HDI. 
