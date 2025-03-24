@@ -72,35 +72,38 @@ One of the strengths of this project is that it checks multiple possible relatio
 # Analysis
 
 ## Some notes
-- Using landscape mode for the PDF output because some plots and model summaries are too wide for the default portrait mode and get cut off at the right side. 
--   In the following DI will refer to the "democracy index"
--   and HDI will refer to the "human development index".
--   Homoscedasticity is not absolutely necessary as an assumption if we do not want to predict values but only check for statistical significance and as long as the visual test holds well enough (Residuals vs. Predicted), technical violations (Beusch-Pegan Test) can be ignored and the model is still robust. That is why in the following analysis we will often say that homoscedasticity is not violated although the formal Beusch-Pegan Test fails because the visual test is showing no bad enough violations of homoscedasticity to make our model insignificant. We could say that anyway but this makes it even more valid. 
-- I coded the assumptions checking in a way that assumptions plots are only shown if an assumption fails. 
-Otherwise a summary dictionary is displayed for all assumptions that hold. The following is a short overview of what assumptions are checked and what plots are used and how it is interpreted.
+I am using landscape mode for the PDF output because some plots and model summaries are too wide for the default portrait mode and get cut off at the right side. 
+Moreover, in the following DI will refer to the "democracy index" and HDI will refer to the "human development index".
+Furthermore, homoscedasticity is not absolutely necessary as an assumption if we do not want to predict values but only check for statistical significance and as long as the visual test holds well enough (Residuals vs. Predicted), technical violations (Beusch-Pegan Test) can be ignored and the model is still robust. That is why in the following analysis we will often say that homoscedasticity is not violated although the formal Beusch-Pegan Test fails because the visual test is showing no bad enough violations of homoscedasticity to make our model insignificant. We could say that anyway but this makes it even more valid. 
+In addition to that it is also good to know that I coded the assumptions checking in a way that assumptions plots are only shown if an assumption fails. Otherwise a summary dictionary is displayed for all assumptions that hold. 
+The following code is hopefully self-explaining, but I have created functions and a small code base to simplify the analysis for me and to make it more readable. The source code for the used functions can be found at the following GitHub repository:
+- https://github.com/Winipedia/DI-HDI-Analysis
 
-## Linearity
+## Assunptions
+The following is a short overview of what assumptions are checked and what plots are used and how it is interpreted. 
+
+### Linearity
 Linearity is evaluated via scatter plots. If the points show a linear trend, the assumption is supported.IndependenceIndependence can be visually depicted through an autocorrelation function (ACF) plot. If the residuals show no strong correlation over time lags, the independence assumption holds. The points should all be located inside the cloud.
 
-## Multicollinearity
+### Multicollinearity
 Multicollinearity is evaluated via a correlation matrix heatmap. Correlation coefficients greater than |0.8| are cause for concern.
 
-## Homoscedasticity
+### Homoscedasticity
 Homoscedasticity is checked using the residuals vs fitted values scatter plot. Ideally, the points should be randomly and evenly distributed around the line.
 
-## Normality of Residuals
+### Normality of Residuals
 Normality of the residuals is evaluated using a histogram and Q-Q plot. A histogram should yield a symmetric, bell-shaped distribution, and in the Q-Q plot, the residuals should fall in line with the diagonal line. If you have a sufficiently large sample size of residuals (30 observations per predictor), your model is fairly robust and not greatly impacted by non-normality due to the Central Limit Theorem.
 
-## Outliers
+### Outliers
 Outliers in independent variables are evaluated with boxplots and z-scores. More too many outliers can influence the line of best fit, which can influence the model generation.
 
-## Normality of Random Effects 
+### Normality of Random Effects 
 For mixed models, we can explore the distribution of random effects with the histogram and the Q-Q plot as previously instructed. 
 
-## Independence of Random Effects and Residuals 
+### Independence of Random Effects and Residuals 
 This assumption ensures that random effects and residuals are not correlated. You will check for patterns by plotting random effects against residuals in a scatterplot. If there are no patterns, our assumption is validated. 
 
-## Homoscedasticity of Random Effects
+### Homoscedasticity of Random Effects
 To visualize group-level variances, we can use a boxplot. If the standard deviations appear similar across groups, our assumption is validated.  
 
 If these three assumptions hold to a sufficient degree, our model is more robust and has more statistical meaning.  
