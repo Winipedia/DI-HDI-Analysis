@@ -291,3 +291,33 @@ This study adds nuance by suggesting that democracy's impact on well-being may d
 # Possible Future Work
 
 As DI seems to not have a significant effect on HDI, we should consider what does instead. The goal should be to maximize HDI worldwide. Therefore we should look at other factors that influence HDI. This could be important to know as it would allow more efficient allocation of resources and more targeted policies to improve HDI. Other factors could be, excluding the ones which the index is made of: Economic policies, Governance quality, Targeted social interventions, Education policies, Healthcare policies, Infrastructure development, Environmental policies, and Technological advancements as well as GDP overall and per capita. I think looking at policies and clustering them in their intended effect could be interesting to see if there are significant relationships.
+
+
+# A final Visualisation
+To visualize our findings of no clear relationship between DI and HDI we can plot the two variables against each other. The following plot shows that there is no clear relationship between the two variables. 
+```{python}
+#| label: fig:di_hdi_scatter
+#| fig-cap: "Scatter plot of Democracy Index (DI) vs. Rate of Change of Human Development"
+
+# plot DI vs HDI delta
+import matplotlib.pyplot as plt
+import seaborn as sns
+plt.figure(figsize=(10, 6))
+sns.regplot(
+    data=df,
+    x=DI_COL,
+    y=HDI_DELTA_COL,
+    ci=95,
+    line_kws={"color": "red"},
+    scatter_kws={"color": "blue", "s": 25, "alpha": 0.5}
+)
+
+plt.title("Democracy Index vs. Annual Change in Human Development (All Observations)")
+plt.xlabel("Democracy Index (0–10)")
+plt.ylabel("Annual HDI Change")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+```
+
+As we can see in @fig:di_hdi_scatter there is no clear relationship between the two variables. The red line shows the line of best fit and as we can see there is no clear trend or correlation between the two variables. This visualizes our conclusion that there is no significant relationship between DI and HDI.
