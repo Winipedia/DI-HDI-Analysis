@@ -296,7 +296,7 @@ As DI seems to not have a significant effect on HDI, we should consider what doe
 # A final Visualisation
 To visualize our findings of no clear relationship between DI and HDI we can plot the two variables against each other. The following plot shows that there is no clear relationship between the two variables. 
 ```{python}
-#| label: fig:di_hdi_scatter
+#| label: fig_di_hdi_delta_scatter
 #| fig-cap: "Scatter plot of Democracy Index (DI) vs. Rate of Change of Human Development"
 
 # plot DI vs HDI delta
@@ -320,4 +320,4 @@ plt.tight_layout()
 plt.show()
 ```
 
-As we can see in @fig:di_hdi_scatter there is no clear relationship between the two variables. The red line shows the line of best fit and as we can see there is no clear trend or correlation between the two variables. This visualizes our conclusion that there is no significant relationship between DI and HDI. 
+As we can see in @fig_di_hdi_delta_scatter there is no clear relationship between the two variables. The red line shows the line of best fit and as we can see there is no clear trend or correlation between the two variables. This visualizes our conclusion that there is no significant relationship between DI and HDI. 
