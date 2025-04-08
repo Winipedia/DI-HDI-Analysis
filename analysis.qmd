@@ -203,22 +203,29 @@ m5 = do_mixed_linear_regression(
 The lag col was added to fix independence like before. By adding a column that has the previous year as a value we allow the regression to pick up on the actual correlations and avoid autocorrelation. The visual shows that the homoscedasticity assumption holds. Also this mixed linear regression analysis confirms that DI is statistically insignificant (p \> 0.05). However year is significant (p \< 0.05) although the negative coefficiant suggests that HDI decreases over time which is historically not the case but is probably caused by the lag overshadowing the year columns positive effects.
 
 ```{python}
+import warnings
+from statsmodels.tools.sm_exceptions import ConvergenceWarning
 
-delta = 1
-HDI_DELTA_COL = HDI_COL + "_delta_" + str(delta)
-df[HDI_DELTA_COL] = df.groupby(COUNTRY_COL)[HDI_COL].diff(-delta).round(2).multiply(-1) / delta
+with warnings.catch_warnings():
+    # disable ConvergenceWarning from statsmodels for this block only
+    warnings.simplefilter('ignore', ConvergenceWarning)
 
-m5 = do_mixed_linear_regression(
-    df=df,
-    independent_cols=[DI_COL],
-    dependent_col=HDI_DELTA_COL,
-    group_col=COUNTRY_COL,
-    col_to_transform={
-        DI_COL: z_score_transform,
-    },
-)
+    delta = 1
+    HDI_DELTA_COL = HDI_COL + "_delta_" + str(delta)
+    df[HDI_DELTA_COL] = df.groupby(COUNTRY_COL)[HDI_COL].diff(-delta).round(2).multiply(-1) / delta
+
+    m5 = do_mixed_linear_regression(
+        df=df,
+        independent_cols=[DI_COL],
+        dependent_col=HDI_DELTA_COL,
+        group_col=COUNTRY_COL,
+        col_to_transform={
+            DI_COL: z_score_transform,
+        },
+    )
 ```
 
+In this specific model we had a convergence warning where the standard numerical method did not converge but instead the lbfgs method was used instead. This is not of serious concern but should be noted here. 
 Now we also check the delta column with our mixed effects model. We had to apply a z-transform on the DI_COL to fix numerical instability because the model did not converge. The homoscedasticity assumptions seems to hold in the visual well enough. DI now has a statistically significant affect on the rate of change of HDI (p \< 0.05). As this model accounts for country effects it is more reliable than the previous OLS regressions. The analysis is robust with a 2322 observations across 166 groups (countries) and an average group size of 14. However the conditional and marginal R\^2 for this model are very low (0.02, 0.06) and suggest that although the effect is statistically significant it explains almost none of the variance within the rate of change of HDI. The results of this models analysis suggest that DI has almost no if any at all influence on the HDI of countries, which is counter-intuitive on first thought but in line with findings of other studies which came to the same surprising conclusion as explained below in further sections.
 
 # Conclusion
@@ -321,3 +328,6 @@ plt.show()
 ```
 
 As we can see in @fig_di_hdi_delta_scatter there is no clear relationship between the two variables. The red line shows the line of best fit and as we can see there is no clear trend or correlation between the two variables. This visualizes our conclusion that there is no significant relationship between DI and HDI. 
+
+What we can definetely conclude from this analysis is that DI seems to have no short term (about 20 years) effect on HDI. This is a surprising finding as it is often assumed that democracy has a positive effect on HDI. However, as we have seen in the literature review above, other studies have come to a similar conclusion. This is a very interesting finding and should be further investigated in future studies.
+Perhaps democracy has only such a slight effect that it can only be seen with more longterm data. 
