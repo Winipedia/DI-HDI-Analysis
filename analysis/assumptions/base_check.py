@@ -46,7 +46,7 @@ def show_plot(
     if plot_func_kwargs is None:
         plot_func_kwargs = {}
     
-    fig = plt.figure(figsize=(8, 6))
+    fig = plt.figure(figsize=(4, 2))
 
     if pass_axis:
         ax = fig.add_subplot(111)
@@ -63,10 +63,10 @@ def show_plot(
     if y0line:
         plt.axhline(y=0, color='r', linestyle='--')
 
-    plt.subplots_adjust(bottom=0.25)
+    plt.subplots_adjust(bottom=0.18)
     plt.figtext(
-        0.5, 0.05, message, wrap=True,
-        horizontalalignment='center', fontsize=12,
-        bbox=dict(facecolor='white', alpha=0.8, pad=10)
+        0.5, 0.01, message, wrap=True,
+        horizontalalignment='center', fontsize=9,
+        bbox=dict(facecolor='white', alpha=0.8, pad=6)
     )
     plt.show()
